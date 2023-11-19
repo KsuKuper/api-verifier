@@ -1,0 +1,1574 @@
+{
+	"info": {
+		"_postman_id": "4a0aa5e2-54a4-4975-bb67-9a3dda36ef35",
+		"name": "Verifier",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_uid": "20300544-4a0aa5e2-54a4-4975-bb67-9a3dda36ef35"
+	},
+	"item": [
+		{
+			"name": "Task-resource",
+			"item": [
+				{
+					"name": "login_admin",
+					"item": [
+						{
+							"name": "login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c941c3b1-fcd3-47f4-9212-1b940fc7dfbf",
+										"exec": [
+											"let jsonBody = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Response body contains id_token\", function () {",
+											"    pm.expect(jsonBody).to.have.property(\"id_token\");",
+											"    pm.collectionVariables.set(\"id_token\", jsonBody.id_token);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "b02f2d0a-50c3-425c-a76e-e655cd9a7ae5",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json, text/plain, */*"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+									},
+									{
+										"key": "Connection",
+										"value": "keep-alive"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Cookie",
+										"value": "Webstorm-477bfb66=fe2764b1-cf24-4190-b17a-b4d72a3c50d4"
+									},
+									{
+										"key": "Origin",
+										"value": "http://localhost:8080"
+									},
+									{
+										"key": "Referer",
+										"value": "http://localhost:8080/login"
+									},
+									{
+										"key": "Sec-Fetch-Dest",
+										"value": "empty"
+									},
+									{
+										"key": "Sec-Fetch-Mode",
+										"value": "cors"
+									},
+									{
+										"key": "Sec-Fetch-Site",
+										"value": "same-origin"
+									},
+									{
+										"key": "User-Agent",
+										"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+									},
+									{
+										"key": "sec-ch-ua",
+										"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+									},
+									{
+										"key": "sec-ch-ua-mobile",
+										"value": "?0"
+									},
+									{
+										"key": "sec-ch-ua-platform",
+										"value": "\"macOS\""
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin\",\n    \"rememberMe\": false\n}"
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/authenticate",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"authenticate"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "808834ff-448f-4b83-acea-159a3c5a19b5"
+				},
+				{
+					"name": "Positive tests",
+					"item": [
+						{
+							"name": "create task",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5d5dd5c4-3ccf-43d9-9ace-341273199d9f",
+										"exec": [
+											"let jsonBody = pm.response.json();",
+											"",
+											"pm.collectionVariables.get(\"id_token\", jsonBody.id_token);",
+											"pm.collectionVariables.set(\"id\", jsonBody.id);",
+											"",
+											"pm.test(\"Response body is not empty\", function () {",
+											"  const responseBody = pm.response.text();",
+											"  pm.expect(responseBody).to.exist.and.to.not.be.empty;",
+											"});",
+											"pm.test(\"Response body is in JSON format\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"json\");",
+											"});",
+											"pm.test(\"Response headers contain the expected content type\", function () {",
+											"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+											"});",
+											"pm.test(\"Response status code is 201\", function () {",
+											"  pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"Status code name is 'Created'\", function () {",
+											"    pm.response.to.have.status(\"Created\");",
+											"});",
+											"",
+											"pm.test(\"Response has required fields\", function () {",
+											"  const responseData = pm.response.json();",
+											"  ",
+											"  pm.expect(responseData).to.be.an('object');",
+											"  pm.expect(responseData).to.have.property('id').that.is.a('number');",
+											"  pm.expect(responseData).to.have.property('text').that.is.a('string');",
+											"  pm.expect(responseData).to.have.property('answer').that.is.a('string');",
+											"  pm.expect(responseData).to.have.property('title').that.is.a('string');",
+											"});",
+											"",
+											"pm.test(\"ID is a non-negative integer\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData).to.be.an('object');",
+											"    pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+											"    pm.expect(responseData.id).to.be.at.least(0);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 500ms\", function () {",
+											"  pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "4c7833fa-56f3-433b-93d4-9c0788f36b4c",
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "07733a88-1b0e-4940-bd38-13074f703365",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true,
+								"disabledSystemHeaders": {
+									"content-type": true
+								}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+									},
+									{
+										"key": "Cookie",
+										"value": "Webstorm-477bfb66=fe2764b1-cf24-4190-b17a-b4d72a3c50d4"
+									},
+									{
+										"key": "Referer",
+										"value": "http://localhost:8080/task?page=1&sort=id,asc"
+									},
+									{
+										"key": "Sec-Fetch-Dest",
+										"value": "empty"
+									},
+									{
+										"key": "Sec-Fetch-Mode",
+										"value": "cors"
+									},
+									{
+										"key": "Sec-Fetch-Site",
+										"value": "same-origin"
+									},
+									{
+										"key": "sec-ch-ua",
+										"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+									},
+									{
+										"key": "sec-ch-ua-mobile",
+										"value": "?0"
+									},
+									{
+										"key": "sec-ch-ua-platform",
+										"value": "\"macOS\""
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Origin",
+										"value": "http://localhost:8080"
+									},
+									{
+										"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+										"key": "Authorization",
+										"value": "{{id_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Did you create a new task?\",\n    \"text\": \"Did you create a new task?\",\n    \"answer\": \"I created a new task\"\n}\n"
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/tasks",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get tasks",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "123d6507-0742-4457-93af-58428061512d",
+										"exec": [
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Response is an array\", function () {",
+											"    pm.expect(pm.response.json()).to.be.an('array');",
+											"});",
+											"",
+											"pm.test(\"Each element in the array has an id, text, answer, and title property\", function () {",
+											"    pm.response.json().forEach(function(task) {",
+											"        pm.expect(task).to.have.property('id');",
+											"        pm.expect(task).to.have.property('text');",
+											"        pm.expect(task).to.have.property('answer');",
+											"        pm.expect(task).to.have.property('title');",
+											"    });",
+											"});",
+											"",
+											"let template = `",
+											"<style type=\"text/css\">",
+											"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}",
+											"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}",
+											"    .tftable tr {background-color:#ffffff;}",
+											"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}",
+											"    .tftable tr:hover {background-color:#e0ffff;}",
+											"</style>",
+											"",
+											"<table class=\"tftable\" border=\"1\">",
+											"    <tr>",
+											"        <th>ID</th>",
+											"        <th>Title</th>",
+											"        <th>Text</th>",
+											"        <th>Answer</th>",
+											"    </tr>",
+											"    ",
+											"    {{#each response}}",
+											"        <tr>",
+											"            <td>{{id}}</td>",
+											"            <td>{{title}}</td>",
+											"            <td>{{text}}</td>",
+											"            <td>{{answer}}</td>",
+											"        </tr>",
+											"    {{/each}}",
+											"</table>",
+											"`;",
+											"",
+											"function constructVisualizerPayload() {",
+											"    return {response: pm.response.json()}",
+											"}",
+											"",
+											"pm.visualizer.set(template, constructVisualizerPayload());",
+											"",
+											"let jsonBody = pm.response.json();",
+											"pm.collectionVariables.get(\"id_token\", jsonBody.id_token);",
+											"pm.collectionVariables.get(\"id\", jsonBody.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "3c0d83c0-bca9-4526-bdc7-3774d73b3769",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+										"key": "Authorization",
+										"value": "{{id_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/api/tasks?page=0&size=70",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "0"
+										},
+										{
+											"key": "size",
+											"value": "70"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get task_id",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "83218a67-f7d3-44ed-833f-811b80a07961",
+										"exec": [
+											"pm.collectionVariables.get(\"id\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "e84fd97c-7b52-4240-a46f-523dd605f15d",
+										"exec": [
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Response is an object with id, text, answer, and title properties\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an('object').that.has.all.keys('id', 'text', 'answer', 'title');",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});",
+											"",
+											"let jsonBody = pm.response.json();",
+											"pm.collectionVariables.get(\"id_token\", jsonBody.id_token);",
+											"pm.collectionVariables.get(\"id\", jsonBody.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "c4334590-f58e-4191-b2c3-941613de5d66",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"warning": "This is a duplicate header and will be overridden by the Authorization header generated by Postman.",
+										"key": "Authorization",
+										"value": "{{id_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/api/tasks/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update all info task_id",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "ea4ab805-d123-4d2c-8304-8c3247c28889",
+										"exec": [
+											"pm.collectionVariables.get(\"id\");",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "53afed07-8f55-447e-9d97-820925837fac",
+										"exec": [
+											"pm.test(\"Response status code is 200\", function () {",
+											"  pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Validate the 'id' field is a non-negative integer\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData.id).to.be.a('number', \"'id' field should be a number\");",
+											"    pm.expect(responseData.id).to.be.at.least(0, \"'id' field should be a non-negative integer\");",
+											"});",
+											"",
+											"pm.test(\"Validate the 'text' field is a non-empty string\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData).to.be.an('object');",
+											"    pm.expect(responseData.text).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+											"});",
+											"",
+											"pm.test(\"The 'answer' field is a non-empty string\", function () {",
+											"  const responseData = pm.response.json();",
+											"  ",
+											"  pm.expect(responseData.answer).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+											"});",
+											"",
+											"pm.test(\"Validate the 'title' field is a non-empty string\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData.title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+											"});",
+											"",
+											"let jsonBody = pm.response.json();",
+											"pm.collectionVariables.get(\"id_token\", jsonBody.id_token);",
+											"pm.collectionVariables.get(\"id\", jsonBody.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "8169fc78-795a-4fe4-80ac-de4509e74479",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true,
+								"disabledSystemHeaders": {}
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"id\": {{id}},\n  \"text\": \"Do you create a new task?\",\n  \"answer\": \"I do create a new task number is {{id}}\",\n  \"title\": \"Create a new task\"\n}"
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/tasks/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get task after put update",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "b4e205b7-f87f-4256-a711-de7b6ffe5f4e",
+										"exec": [
+											"pm.collectionVariables.get(\"id\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "d05f4f88-36eb-4f24-ae82-d1bcb010a20c",
+										"exec": [
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Response is an object with id, text, answer, and title properties\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an('object').that.has.all.keys('id', 'text', 'answer', 'title');",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});",
+											"let jsonBody = pm.response.json();",
+											"pm.collectionVariables.get(\"id_token\", jsonBody.id_token);",
+											"pm.collectionVariables.get(\"id\", jsonBody.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "a3881b07-4bec-4e09-8387-5841893fbd4c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "accept",
+										"value": "*/*"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+									}
+								],
+								"url": {
+									"raw": "{{baseURL}}/api/tasks/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update info task_id",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "fbf65a4d-64a6-4f89-ac7b-2b5837aad23c",
+										"exec": [
+											"pm.collectionVariables.get(\"id\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "afbaf763-d47c-4344-9a88-4a359db61fb6",
+										"exec": [
+											"pm.test(\"Response status code is 200\", function () {",
+											"  pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Validate the 'id' field is a non-negative integer\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData.id).to.be.a('number', \"'id' field should be a number\");",
+											"    pm.expect(responseData.id).to.be.at.least(0, \"'id' field should be a non-negative integer\");",
+											"});",
+											"",
+											"pm.test(\"Validate the 'text' field is a non-empty string\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData).to.be.an('object');",
+											"    pm.expect(responseData.text).to.exist.and.to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+											"});",
+											"",
+											"pm.test(\"The 'answer' field is a non-empty string\", function () {",
+											"  const responseData = pm.response.json();",
+											"  ",
+											"  pm.expect(responseData.answer).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+											"});",
+											"",
+											"pm.test(\"Validate the 'title' field is a non-empty string\", function () {",
+											"    const responseData = pm.response.json();",
+											"    ",
+											"    pm.expect(responseData.title).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Value should not be empty\");",
+											"});",
+											"let jsonBody = pm.response.json();",
+											"pm.collectionVariables.get(\"id_token\", jsonBody.id_token);",
+											"pm.collectionVariables.get(\"id\", jsonBody.id);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "f3cf041c-c2e0-4a11-9ec8-500d2e901f9c",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "accept",
+										"value": "*/*"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"id\": {{id}},\n  \"text\": \"Will you create one more task?\",\n  \"answer\": \"I will continue to create task number is {{id}} + 1\",\n  \"title\": \"Create a new task\"\n}"
+								},
+								"url": {
+									"raw": "{{baseURL}}/api/tasks/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get task after patch update",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "edb4245a-ee86-4ee6-8571-35684fb24e99",
+										"exec": [
+											"pm.collectionVariables.get(\"id\");"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"id": "5313f497-c0e2-4f8d-93ba-3e5604be9809",
+										"exec": [
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Response is an object with id, text, answer, and title properties\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).to.be.an('object').that.has.all.keys('id', 'text', 'answer', 'title');",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "f0c7b525-cea3-4269-9946-d69f2f372f52",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/tasks/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete task_id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c9c9c734-322e-42c7-9893-4621dcafae4c",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"Status code name has string\", function () {",
+											"    pm.response.to.have.status(\"OK\");",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 200ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(200);",
+											"});",
+											"",
+											"pm.test(\"Response time is less than 500ms\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(500);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"id": "1c212012-6a74-490b-8e54-1281a19dc240",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{id_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseURL}}/api/tasks/{{id}}",
+									"host": [
+										"{{baseURL}}"
+									],
+									"path": [
+										"api",
+										"tasks",
+										"{{id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"id": "01a11ac3-c27a-4993-9a4a-3cae325df13e"
+				},
+				{
+					"name": "Negative tests",
+					"item": [
+						{
+							"name": "Create task with null data",
+							"item": [
+								{
+									"name": "create task",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "7ca8f363-5a92-4c7c-8c93-91a1bc4b1baf",
+												"exec": [
+													"let jsonBody = pm.response.json();",
+													"",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"",
+													"pm.test(\"Response body is not empty\", function () {",
+													"  const responseBody = pm.response.text();",
+													"  pm.expect(responseBody).to.exist.and.to.not.be.empty;",
+													"});",
+													"pm.test(\"Response body is in JSON format\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"json\");",
+													"});",
+													"",
+													"pm.test(\"Status code is 404\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});",
+													"",
+													"pm.test(\"Status code name is Not Found\", function () {",
+													"    pm.response.to.have.status(\"Not Found\");",
+													"});",
+													"",
+													"pm.test(\"Status code name is 'Internal Server Error'\", function () {",
+													"    pm.response.to.have.status(\"Internal Server Error\");",
+													"});",
+													"",
+													"pm.test(\"Response has required fields\", function () {",
+													"  const responseData = pm.response.json();",
+													"  ",
+													"  pm.expect(responseData).to.be.an('object');",
+													"  pm.expect(responseData).to.have.property('type').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('title').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('status').that.is.a('number');",
+													"  pm.expect(responseData).to.have.property('detail').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('instance').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('message').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('path').that.is.a('string');",
+													"});",
+													"",
+													"pm.test(\"Status code is a non-negative integer\", function () {",
+													"    const responseData = pm.response.json();",
+													"    ",
+													"    pm.expect(responseData).to.be.an('object');",
+													"    pm.expect(responseData.status).to.exist.and.to.be.a('number');",
+													"    pm.expect(responseData.status).to.be.at.least(0);",
+													"});",
+													"",
+													"pm.test(\"Response time is less than 500ms\", function () {",
+													"  pm.expect(pm.response.responseTime).to.be.below(500);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "a63425f8-364f-4f8b-bbdb-07a215d74c5e",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true,
+										"disabledSystemHeaders": {
+											"content-type": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{id_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json, text/plain, */*",
+												"disabled": true
+											},
+											{
+												"key": "Accept-Language",
+												"value": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+											},
+											{
+												"key": "Cookie",
+												"value": "Webstorm-477bfb66=fe2764b1-cf24-4190-b17a-b4d72a3c50d4"
+											},
+											{
+												"key": "Referer",
+												"value": "http://localhost:8080/task?page=1&sort=id,asc"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-origin"
+											},
+											{
+												"key": "sec-ch-ua",
+												"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+											},
+											{
+												"key": "sec-ch-ua-mobile",
+												"value": "?0"
+											},
+											{
+												"key": "sec-ch-ua-platform",
+												"value": "\"macOS\""
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "http://localhost:8080"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": null,\n    \"text\": \"Did you create a new task?\",\n    \"answer\": \"I created a new task\"\n}\n"
+										},
+										"url": {
+											"raw": "{{baseURL}}/api/tasks",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"api",
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "73488d7a-82f0-45db-aadf-25c6334729d6"
+						},
+						{
+							"name": "Create task with empty datas",
+							"item": [
+								{
+									"name": "create task",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "953948d3-060f-4e24-a477-fe6111d89911",
+												"exec": [
+													"let jsonBody = pm.response.json();",
+													"",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"",
+													"pm.test(\"Response body is not empty\", function () {",
+													"  const responseBody = pm.response.text();",
+													"  pm.expect(responseBody).to.exist.and.to.not.be.empty;",
+													"});",
+													"pm.test(\"Response body is in JSON format\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"json\");",
+													"});",
+													"pm.test(\"Response headers contain the expected content type\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+													"});",
+													"",
+													"pm.test(\"Status code is 404\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});",
+													"",
+													"pm.test(\"Status code name is Not Found\", function () {",
+													"    pm.response.to.have.status(\"Not Found\");",
+													"});",
+													"",
+													"pm.test(\"Response has required fields\", function () {",
+													"  const responseData = pm.response.json();",
+													"  ",
+													"  pm.expect(responseData).to.be.an('object');",
+													"  pm.expect(responseData).to.have.property('id').that.is.a('number');",
+													"  pm.expect(responseData).to.have.property('text').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('answer').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('title').that.is.a('string');",
+													"});",
+													"",
+													"pm.test(\"ID is a non-negative integer\", function () {",
+													"    const responseData = pm.response.json();",
+													"    ",
+													"    pm.expect(responseData).to.be.an('object');",
+													"    pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+													"    pm.expect(responseData.id).to.be.at.least(0);",
+													"});",
+													"",
+													"pm.test(\"Response time is less than 500ms\", function () {",
+													"  pm.expect(pm.response.responseTime).to.be.below(500);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "592c1202-8aa2-4a84-ab5b-ae8ddbd48112",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true,
+										"disabledSystemHeaders": {
+											"content-type": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{id_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json, text/plain, */*",
+												"disabled": true
+											},
+											{
+												"key": "Accept-Language",
+												"value": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+											},
+											{
+												"key": "Cookie",
+												"value": "Webstorm-477bfb66=fe2764b1-cf24-4190-b17a-b4d72a3c50d4"
+											},
+											{
+												"key": "Referer",
+												"value": "http://localhost:8080/task?page=1&sort=id,asc"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-origin"
+											},
+											{
+												"key": "sec-ch-ua",
+												"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+											},
+											{
+												"key": "sec-ch-ua-mobile",
+												"value": "?0"
+											},
+											{
+												"key": "sec-ch-ua-platform",
+												"value": "\"macOS\""
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "http://localhost:8080"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": \"\",\n    \"text\": \"1\",\n    \"answer\": \"1\"\n}\n"
+										},
+										"url": {
+											"raw": "{{baseURL}}/api/tasks",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"api",
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "3a242342-3281-407e-931c-1cf189431174"
+						},
+						{
+							"name": "Create task with int",
+							"item": [
+								{
+									"name": "create task",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3c8dee14-97b1-446b-b8cd-0afcf2480625",
+												"exec": [
+													"let jsonBody = pm.response.json();",
+													"",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"",
+													"pm.test(\"Response body is not empty\", function () {",
+													"  const responseBody = pm.response.text();",
+													"  pm.expect(responseBody).to.exist.and.to.not.be.empty;",
+													"});",
+													"pm.test(\"Response body is in JSON format\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"json\");",
+													"});",
+													"pm.test(\"Response headers contain the expected content type\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+													"});",
+													"",
+													"pm.test(\"Status code is 404\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});",
+													"",
+													"pm.test(\"Status code name is Not Found\", function () {",
+													"    pm.response.to.have.status(\"Not Found\");",
+													"});",
+													"",
+													"pm.test(\"Response has required fields\", function () {",
+													"  const responseData = pm.response.json();",
+													"  ",
+													"  pm.expect(responseData).to.be.an('object');",
+													"  pm.expect(responseData).to.have.property('id').that.is.a('number');",
+													"  pm.expect(responseData).to.have.property('text').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('answer').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('title').that.is.a('string');",
+													"});",
+													"",
+													"pm.test(\"ID is a non-negative integer\", function () {",
+													"    const responseData = pm.response.json();",
+													"    ",
+													"    pm.expect(responseData).to.be.an('object');",
+													"    pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+													"    pm.expect(responseData.id).to.be.at.least(0);",
+													"});",
+													"",
+													"pm.test(\"Response time is less than 500ms\", function () {",
+													"  pm.expect(pm.response.responseTime).to.be.below(500);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "bc5d3769-6e20-4e79-b20b-d11abc039206",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true,
+										"disabledSystemHeaders": {
+											"content-type": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{id_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json, text/plain, */*",
+												"disabled": true
+											},
+											{
+												"key": "Accept-Language",
+												"value": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+											},
+											{
+												"key": "Cookie",
+												"value": "Webstorm-477bfb66=fe2764b1-cf24-4190-b17a-b4d72a3c50d4"
+											},
+											{
+												"key": "Referer",
+												"value": "http://localhost:8080/task?page=1&sort=id,asc"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-origin"
+											},
+											{
+												"key": "sec-ch-ua",
+												"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+											},
+											{
+												"key": "sec-ch-ua-mobile",
+												"value": "?0"
+											},
+											{
+												"key": "sec-ch-ua-platform",
+												"value": "\"macOS\""
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "http://localhost:8080"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"title\": 2,\n    \"text\": 5,\n    \"answer\": \"1\"\n}\n"
+										},
+										"url": {
+											"raw": "{{baseURL}}/api/tasks",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"api",
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "120281cc-a36b-495a-8104-ee23ef4f4b95"
+						},
+						{
+							"name": "Create task without required datas",
+							"item": [
+								{
+									"name": "create task",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "0467af18-6825-4ca1-898c-9cb73b83387a",
+												"exec": [
+													"let jsonBody = pm.response.json();",
+													"",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"pm.collectionVariables.set(\"id\", jsonBody.id);",
+													"",
+													"pm.test(\"Response body is not empty\", function () {",
+													"  const responseBody = pm.response.text();",
+													"  pm.expect(responseBody).to.exist.and.to.not.be.empty;",
+													"});",
+													"pm.test(\"Response body is in JSON format\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"json\");",
+													"});",
+													"pm.test(\"Response headers contain the expected content type\", function () {",
+													"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+													"});",
+													"",
+													"pm.test(\"Status code is 404\", function () {",
+													"    pm.response.to.have.status(404);",
+													"});",
+													"",
+													"pm.test(\"Status code name is Not Found\", function () {",
+													"    pm.response.to.have.status(\"Not Found\");",
+													"});",
+													"",
+													"pm.test(\"Response has required fields\", function () {",
+													"  const responseData = pm.response.json();",
+													"  ",
+													"  pm.expect(responseData).to.be.an('object');",
+													"  pm.expect(responseData).to.have.property('id').that.is.a('number');",
+													"  pm.expect(responseData).to.have.property('text').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('answer').that.is.a('string');",
+													"  pm.expect(responseData).to.have.property('title').that.is.a('string');",
+													"});",
+													"",
+													"pm.test(\"ID is a non-negative integer\", function () {",
+													"    const responseData = pm.response.json();",
+													"    ",
+													"    pm.expect(responseData).to.be.an('object');",
+													"    pm.expect(responseData.id).to.exist.and.to.be.a('number');",
+													"    pm.expect(responseData.id).to.be.at.least(0);",
+													"});",
+													"",
+													"pm.test(\"Response time is less than 500ms\", function () {",
+													"  pm.expect(pm.response.responseTime).to.be.below(500);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"id": "94d0d584-eb35-47de-b050-d18cfb0dc05a",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true,
+										"disabledSystemHeaders": {
+											"content-type": true
+										}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": [
+												{
+													"key": "token",
+													"value": "{{id_token}}",
+													"type": "string"
+												}
+											]
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json, text/plain, */*",
+												"disabled": true
+											},
+											{
+												"key": "Accept-Language",
+												"value": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7"
+											},
+											{
+												"key": "Authorization",
+												"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTcwMDE0NTIzMCwiYXV0aCI6IlJPTEVfQURNSU4iLCJpYXQiOjE3MDAwNTg4MzB9.cxGuQQikst0mlmx-smJvap92huzpX32HZ0_yhMAP8SyUVRvJiN7-FECAiF7maSoYwLp373wOxy9hbGBwRqh4BA"
+											},
+											{
+												"key": "Cookie",
+												"value": "Webstorm-477bfb66=fe2764b1-cf24-4190-b17a-b4d72a3c50d4"
+											},
+											{
+												"key": "Referer",
+												"value": "http://localhost:8080/task?page=1&sort=id,asc"
+											},
+											{
+												"key": "Sec-Fetch-Dest",
+												"value": "empty"
+											},
+											{
+												"key": "Sec-Fetch-Mode",
+												"value": "cors"
+											},
+											{
+												"key": "Sec-Fetch-Site",
+												"value": "same-origin"
+											},
+											{
+												"key": "sec-ch-ua",
+												"value": "\"Google Chrome\";v=\"119\", \"Chromium\";v=\"119\", \"Not?A_Brand\";v=\"24\""
+											},
+											{
+												"key": "sec-ch-ua-mobile",
+												"value": "?0"
+											},
+											{
+												"key": "sec-ch-ua-platform",
+												"value": "\"macOS\""
+											},
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											},
+											{
+												"key": "Origin",
+												"value": "http://localhost:8080"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    // \"title\": 2,\n    // \"text\": 5,\n    \"answer\": \"1\"\n}\n"
+										},
+										"url": {
+											"raw": "{{baseURL}}/api/tasks",
+											"host": [
+												"{{baseURL}}"
+											],
+											"path": [
+												"api",
+												"tasks"
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"id": "657fed41-e099-4aaa-b974-2ede8ecd63d8"
+						}
+					],
+					"id": "2212afb1-de0b-451c-b2a7-8e1798552fd1"
+				}
+			],
+			"id": "feadf490-2174-4026-b806-b87fcb34b0d4"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "dc70324c-83a9-4cf6-a50a-f32a2efe61bd",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "bc944414-b320-40e7-81a0-df656c00a336",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "8388918d-b7fc-4e86-8e90-4e38d40b61e8",
+			"key": "baseURL",
+			"value": "http://localhost:8080"
+		},
+		{
+			"id": "e50afeea-5b9a-40bc-80a3-20be1233ff1b",
+			"key": "id",
+			"value": "{{id}}"
+		},
+		{
+			"id": "12efc2da-16a9-409a-b40b-a18a2a6a9d6e",
+			"key": "id_token",
+			"value": "{{id_token}}"
+		}
+	]
+}
